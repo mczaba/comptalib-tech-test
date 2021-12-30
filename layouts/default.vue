@@ -1,7 +1,7 @@
 <template>
   <div>
     <nav>
-      <button @click="goToPreviousPage">Previous page</button>
+      <button @click="goToPreviousPage">Pokemon list</button>
       <button @click="togglePokeTeam">Team</button>
     </nav>
     <poke-team v-if="showPokeTeam" @close="togglePokeTeam" />
@@ -29,7 +29,7 @@ export default Vue.extend({
   },
   methods: {
     goToPreviousPage() {
-      this.$router.go(-1)
+      this.$router.push('/')
     },
     togglePokeTeam() {
       this.showPokeTeam = !this.showPokeTeam
