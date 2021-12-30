@@ -1,65 +1,85 @@
 <template>
   <div class="container">
-    <div>
-      <Logo />
-      <h1 class="title">pokedex</h1>
-      <div class="links">
-        <a
-          href="https://nuxtjs.org/"
-          target="_blank"
-          rel="noopener noreferrer"
-          class="button--green"
-        >
-          Documentation
-        </a>
-        <a
-          href="https://github.com/nuxt/nuxt.js"
-          target="_blank"
-          rel="noopener noreferrer"
-          class="button--grey"
-        >
-          GitHub
-        </a>
-      </div>
+    <h1 class="title">Pokemon list</h1>
+    <input
+      v-model="pokeSearch"
+      type="text"
+      placeholder="Search for a pokemon"
+    />
+    <div class="poke-list">
+      <poke-card
+        v-for="pokemon in pokeListFiltered"
+        :key="pokemon.name"
+        v-lazyload
+        :pokemon="pokemon"
+        :lazyload="true"
+      />
     </div>
   </div>
 </template>
 
 <script lang="ts">
 import Vue from 'vue'
+import PokeCard from '../components/PokelistCard.vue'
+import LazyLoadDirective from '../directives/lazyload'
 
-export default Vue.extend({})
+type Pokemon = {
+  id: number
+  name: string
+  spriteURL: string
+}
+
+export default Vue.extend({
+  directives: {
+    lazyload: LazyLoadDirective,
+  },
+  components: {
+    PokeCard,
+  },
+  data() {
+    return {
+      pokeSearch: '',
+      pokeList: [] as Pokemon[],
+    }
+  },
+  computed: {
+    pokeListFiltered(): Pokemon[] {
+      return this.pokeList.filter((pokemon: Pokemon) => {
+        if (
+          this.pokeSearch.length > 2 &&
+          !pokemon.name.includes(this.pokeSearch.toLowerCase())
+        )
+          return false
+        return true
+      })
+    },
+  },
+  async mounted() {
+    await this.$store.dispatch('fetchPokemons')
+    this.pokeList = this.$store.getters.pokeList
+  },
+})
 </script>
 
-<style>
+<style scoped>
+h1 {
+  margin-bottom: 0;
+}
 .container {
   margin: 0 auto;
   min-height: 100vh;
+  gap: 20px;
   display: flex;
-  justify-content: center;
+  flex-direction: column;
   align-items: center;
   text-align: center;
 }
 
-.title {
-  font-family: 'Quicksand', 'Source Sans Pro', -apple-system, BlinkMacSystemFont,
-    'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-  display: block;
-  font-weight: 300;
-  font-size: 100px;
-  color: #35495e;
-  letter-spacing: 1px;
-}
-
-.subtitle {
-  font-weight: 300;
-  font-size: 42px;
-  color: #526488;
-  word-spacing: 5px;
-  padding-bottom: 15px;
-}
-
-.links {
-  padding-top: 15px;
+.poke-list {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  width: 90%;
 }
 </style>

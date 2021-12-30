@@ -1,9 +1,42 @@
 <template>
   <div>
-    <Nuxt />
+    <nav>
+      <button @click="goToPreviousPage">Previous page</button>
+      <button @click="togglePokeTeam">Team</button>
+    </nav>
+    <poke-team v-if="showPokeTeam" @close="togglePokeTeam" />
+    <Nuxt id="content" />
   </div>
 </template>
 
+<script lang="ts">
+import Vue from 'vue'
+import PokeTeam from '../components/PokeTeam.vue'
+
+export default Vue.extend({
+  components: {
+    PokeTeam,
+  },
+  data() {
+    return {
+      showPokeTeam: false,
+    }
+  },
+  mounted() {
+    if (!localStorage.getItem('pokeTeam')) return
+    const pokeTeam = JSON.parse(localStorage.getItem('pokeTeam') as string)
+    this.$store.commit('pokeTeam/INIT_TEAM', pokeTeam)
+  },
+  methods: {
+    goToPreviousPage() {
+      this.$router.go(-1)
+    },
+    togglePokeTeam() {
+      this.showPokeTeam = !this.showPokeTeam
+    },
+  },
+})
+</script>
 <style>
 html {
   font-family: 'Source Sans Pro', -apple-system, BlinkMacSystemFont, 'Segoe UI',
@@ -24,32 +57,73 @@ html {
   margin: 0;
 }
 
-.button--green {
-  display: inline-block;
-  border-radius: 4px;
-  border: 1px solid #3b8070;
-  color: #3b8070;
-  text-decoration: none;
-  padding: 10px 30px;
+nav {
+  position: fixed;
+  top: 0;
+  width: 100%;
+  height: 50px;
+  display: flex;
+  justify-content: space-between;
+  align-items: stretch;
+}
+button {
+  cursor: pointer;
+  background-color: #83cdd5;
+  color: white;
+  font-weight: bold;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 5px;
+}
+nav button {
+  width: 120px;
+  border-radius: 0;
+}
+button:active {
+  background-color: #4d8e95;
 }
 
-.button--green:hover {
-  color: #fff;
-  background-color: #3b8070;
+.card {
+  box-shadow: 0 1px 5px rgba(0, 0, 0, 0.15);
 }
-
-.button--grey {
-  display: inline-block;
-  border-radius: 4px;
-  border: 1px solid #35495e;
+.title {
+  font-family: 'Quicksand', 'Source Sans Pro', -apple-system, BlinkMacSystemFont,
+    'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  display: block;
+  font-weight: 300;
   color: #35495e;
-  text-decoration: none;
-  padding: 10px 30px;
-  margin-left: 15px;
+  letter-spacing: 1px;
 }
 
-.button--grey:hover {
-  color: #fff;
-  background-color: #35495e;
+#content {
+  margin-top: 20px;
+}
+
+@media screen and (max-width: 500px) {
+  nav {
+    bottom: 0;
+    top: auto;
+    border-bottom: none;
+    border-top: 1px solid #efefef;
+    z-index: 1;
+    justify-content: stretch;
+    align-items: stretch;
+    padding: 0;
+    margin: 0;
+    width: 100%;
+  }
+  nav button {
+    width: 50%;
+  }
+  nav button:first-child {
+    border-right: 1px solid white;
+  }
+  nav button:last-child {
+    border-right: 1px solid white;
+    flex-grow: 1;
+  }
+  #content {
+    margin-bottom: 50px;
+  }
 }
 </style>
