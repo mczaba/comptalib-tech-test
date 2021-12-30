@@ -1,5 +1,9 @@
+# doc 
+
 Le pokedex est composé de 2 pages : 
+
 / contenant la liste des 150 premiers pokémons 
+
 /pokemon/:id comprenant les infos détaillées (stats, types, dimensions, liste des techniques) de chaque pokemon. 
 
 La liste des 150 pokemons ainsi que les détails pour chaque pokemon sont sauvegardés dans le state afin de ne pas refaire l'appel à chaque visite de page.
